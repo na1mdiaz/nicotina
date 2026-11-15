@@ -1,0 +1,88 @@
+name: Build NICOTINA
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            artifact: NICOTINA-Windows
+          - name: macOS
+            os: macos-latest
+            artifact: NICOTINA-macOS
+          - name: Linux
+            os: ubuntu-22.04
+            artifact: NICOTINA-Linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias de Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libxcomposite-dev libxcursor-dev \
+            libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libxi-dev \
+            libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev ninja-build
+
+      - name: Configurar (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -S . -B build -A x64
+
+      - name: Configurar (macOS, universal arm64 + Intel)
+        if: runner.os == 'macOS'
+        run: cmake -S . -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+
+      - name: Configurar (Linux)
+        if: runner.os == 'Linux'
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compilar
+        run: cmake --build build --config Release --parallel 4
+
+      - name: Empaquetar
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp -R build/Nicotina_artefacts/Release/VST3/NICOTINA.vst3 dist/
+          if [ -d build/Nicotina_artefacts/Release/AU/NICOTINA.component ]; then
+            cp -R build/Nicotina_artefacts/Release/AU/NICOTINA.component dist/
+          fi
+          cp INSTALAR.txt dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist
+
+  release:
+    name: Publicar release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Comprimir
+        run: |
+          cd artifacts
+          for d in */; do (cd "$d" && zip -qr "../${d%/}.zip" .); done
+          ls -la
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*.zip

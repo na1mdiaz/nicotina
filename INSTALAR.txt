@@ -1,0 +1,42 @@
+NICOTINA ニコチン — 8-BIT CRUSH SYSTEM (VST3)
+===========================================
+
+WINDOWS (FL Studio)
+1. Copia la carpeta NICOTINA.vst3 en:
+   C:\Program Files\Common Files\VST3\
+2. Abre FL Studio > Options > Manage plugins > "Find installed plugins".
+3. Busca NICOTINA en la lista de efectos y márcala como favorita.
+4. Cárgala en un slot del Mixer.
+
+MAC
+1. Copia NICOTINA.vst3 en:  /Library/Audio/Plug-Ins/VST3/
+   (y NICOTINA.component en /Library/Audio/Plug-Ins/Components/ si usas AU)
+2. Como el plugin no está firmado por Apple, abre la Terminal y ejecuta:
+   sudo xattr -cr /Library/Audio/Plug-Ins/VST3/NICOTINA.vst3
+3. En FL Studio: Manage plugins > Find installed plugins.
+
+MANDOS
+- CRUSH 潰 ........ el mando principal. 0 % = limpio. Lleva el sonido hasta los
+                    valores de BIT DEPTH y SAMPLE RATE y añade saturación.
+                    A partir del 90 % la mano aplasta el cigarro del todo.
+- BIT DEPTH 量 .... resolución (1–16 bits). Menos bits = más aspereza.
+- SAMPLE RATE 速 .. divide la frecuencia de muestreo (1/1 a 1/64): brillo metálico.
+- DRY/WET 混 ...... mezcla entre el sonido original y el roto.
+- OUTPUT 音 ....... volumen de salida (-24 a +12 dB). El volumen ya se compensa
+                    solo al subir el CRUSH.
+
+MODOS (flechas ◀ ▶ arriba de la pantalla)
+- GAMEBOY ... 8 bit crudo, con mucho brillo metálico.
+- SP-1200 ... cálido, como los samplers de los 90 (el mejor para 808).
+- RADIO ..... banda estrecha con siseo (no usarlo en el 808: quita el grave).
+- DESTROY ... pliega la onda, sample rate inestable y recorte duro.
+
+BOTONES
+- CARTUCHO (arriba) ... 14 presets. También salen en el menú de presets de FL.
+- SELECT ............... cambia la paleta de la pantalla (DMG, POCKET, YAKUZA, NEON).
+- START ................ bypass.
+- OFF / ON ............. apaga la pantalla para ahorrar ordenador (el sonido sigue).
+
+Doble clic en un mando = vuelve a su valor por defecto. Shift + arrastrar = ajuste fino.
+Al pasar el ratón por encima de cualquier cosa, la pantalla explica para qué sirve.
+La ventana se puede escalar arrastrando la esquina.
