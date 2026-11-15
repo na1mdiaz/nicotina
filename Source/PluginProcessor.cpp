@@ -103,7 +103,7 @@ void NicotinaProcessor::prepareToPlay (double sampleRate, int)
 {
     sr = sampleRate;
     const double ramp = 0.03;
-    crushS.reset (sampleRate, ramp); crushS.setCurrentAndTargetValue (crushP->load() * 0.01f);
+    crushS.reset (sampleRate, 0.05);   // un poco más de deslizamiento para mover CRUSH en directo sin saltos crushS.setCurrentAndTargetValue (crushP->load() * 0.01f);
     bitsS.reset (sampleRate, ramp);  bitsS.setCurrentAndTargetValue (bitsP->load());
     rateS.reset (sampleRate, ramp);  rateS.setCurrentAndTargetValue (rateP->load());
     mixS.reset (sampleRate, ramp);   mixS.setCurrentAndTargetValue (mixP->load() * 0.01f);
@@ -149,7 +149,9 @@ void NicotinaProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Mi
         // CRUSH es el macro: lleva el sonido de limpio a BIT DEPTH / SAMPLE RATE y añade saturación
         const float effBits   = 16.0f - (16.0f - bits) * c;
         const float levels    = std::pow (2.0f, effBits - 1.0f);
-        const float effFactor = 1.0f + (rate - 1.0f) * c;
+        // curva exponencial: cada tramo de la rueda baja la misma cantidad de "octavas",
+        // así al mover CRUSH a mano el sonido cae de forma pareja en vez de pegar el salto al principio
+        const float effFactor = std::pow (rate, c);
         const float phaseInc  = 1.0f / effFactor;
         const float drive     = 1.0f + 5.0f * c * c;
         const float comp      = 1.0f / std::tanh (drive);

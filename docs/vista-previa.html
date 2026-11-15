@@ -93,22 +93,22 @@ let modeIdx = 0;
 const PRESETS = [
   { cat: "INIT",   name: "INIT",         mode: 0, crush: 0,   bits: 8,  rate: 8,   mix: 100, output: 0 },
   // 808 y graves
-  { cat: "808",    name: "808 SUCIO",    mode: 1, crush: 55,  bits: 7,  rate: 2,   mix: 55,  output: -1 },
-  { cat: "808",    name: "808 RABIA",    mode: 3, crush: 60,  bits: 9,  rate: 1.5, mix: 45,  output: -3 },
+  { cat: "808",    name: "808 SUCIO",    mode: 1, crush: 55,  bits: 7,  rate: 2.22,   mix: 55,  output: -1 },
+  { cat: "808",    name: "808 RABIA",    mode: 3, crush: 60,  bits: 9,  rate: 1.55, mix: 45,  output: -3 },
   // batería
-  { cat: "DRUMS",  name: "KICK PUNCH",   mode: 1, crush: 42,  bits: 10, rate: 2,   mix: 35,  output: -1 },
-  { cat: "DRUMS",  name: "SNARE CRUJE",  mode: 0, crush: 72,  bits: 6,  rate: 9,   mix: 60,  output: -3 },
-  { cat: "DRUMS",  name: "HATS METAL",   mode: 0, crush: 90,  bits: 9,  rate: 22,  mix: 85,  output: -4 },
+  { cat: "DRUMS",  name: "KICK PUNCH",   mode: 1, crush: 42,  bits: 10, rate: 2.3,   mix: 35,  output: -1 },
+  { cat: "DRUMS",  name: "SNARE CRUJE",  mode: 0, crush: 72,  bits: 6,  rate: 14.21,   mix: 60,  output: -3 },
+  { cat: "DRUMS",  name: "HATS METAL",   mode: 0, crush: 90,  bits: 9,  rate: 27.74,  mix: 85,  output: -4 },
   // voces
-  { cat: "VOZ",    name: "ONI \u9B3C",    mode: 3, crush: 82,  bits: 5,  rate: 7,   mix: 45,  output: -9 },
+  { cat: "VOZ",    name: "ONI \u9B3C",    mode: 3, crush: 82,  bits: 5,  rate: 8.75,   mix: 45,  output: -9 },
   { cat: "VOZ",    name: "VOZ ROBOT",    mode: 0, crush: 100, bits: 7,  rate: 16,  mix: 65,  output: -5.5 },
-  { cat: "VOZ",    name: "RADIO ROTA",   mode: 2, crush: 75,  bits: 7,  rate: 4,   mix: 100, output: -8 },
+  { cat: "VOZ",    name: "RADIO ROTA",   mode: 2, crush: 75,  bits: 7,  rate: 4.81,   mix: 100, output: -8 },
   // síntesis
   { cat: "SYNTH",  name: "CHIPTUNE",     mode: 0, crush: 100, bits: 4,  rate: 6,   mix: 100, output: -4.5 },
-  { cat: "SYNTH",  name: "PAD LOFI",     mode: 1, crush: 60,  bits: 9,  rate: 4,   mix: 70,  output: -3 },
-  { cat: "SYNTH",  name: "BAJO REESE",   mode: 3, crush: 55,  bits: 8,  rate: 1.5, mix: 55,  output: -5 },
+  { cat: "SYNTH",  name: "PAD LOFI",     mode: 1, crush: 60,  bits: 9,  rate: 5.56,   mix: 70,  output: -3 },
+  { cat: "SYNTH",  name: "BAJO REESE",   mode: 3, crush: 55,  bits: 8,  rate: 1.56, mix: 55,  output: -5 },
   // master / FX
-  { cat: "MASTER", name: "CINTA VIEJA",  mode: 1, crush: 32,  bits: 12, rate: 2,   mix: 30,  output: -1 },
+  { cat: "MASTER", name: "CINTA VIEJA",  mode: 1, crush: 32,  bits: 12, rate: 2.38,   mix: 30,  output: -1 },
   { cat: "FX",     name: "APLASTADO",    mode: 3, crush: 100, bits: 2,  rate: 32,  mix: 100, output: -3.5 },
 ];
 let presetIdx = 0;
@@ -164,11 +164,11 @@ function makeNode() {
       const c = s.crush;
       const effBits = 16 - (16 - s.bits) * c;
       const levels = Math.pow(2, effBits - 1);
-      const phaseInc = 1 / (1 + (s.rate - 1) * c);
+      const effFactor = Math.pow(s.rate, c);   // curva exponencial: barrido parejo al mover CRUSH
+      const phaseInc = 1 / effFactor;
       const drive = 1 + 5 * c * c, comp = 1 / Math.tanh(drive);
       const fade = Math.min(1, c * 4);
       const mode = modeIdx;
-      const effFactor = 1 + (s.rate - 1) * c;
       // filtros por modo (coeficientes de un polo)
       const onePole = fc => 1 - Math.exp(-2 * Math.PI * fc / sr);
       const aLp = mode === 1 ? onePole(Math.max(1800, Math.min(18000, sr * 0.42 / effFactor)))
