@@ -1,0 +1,22 @@
+MUTAGEN 変異 — cómo instalarlo
+==============================
+
+WINDOWS (FL Studio)
+1. Copia la carpeta MUTAGEN.vst3 entera a:
+      C:\Program Files\Common Files\VST3
+   (te pedirá permiso de administrador: acepta).
+2. Abre FL Studio → Options → Manage plugins → "Find installed plugins"
+   (o "Find more plugins"). Busca MUTAGEN y marca la estrella para tenerlo a mano.
+3. Pon MUTAGEN en el Mixer, en un slot del canal de tu sinte, lead o melodía.
+
+Necesita "Microsoft Edge WebView2" (viene de serie en Windows 10 y 11).
+Si la ventana del plugin sale en blanco, instálalo desde:
+   https://developer.microsoft.com/microsoft-edge/webview2/
+
+macOS
+- MUTAGEN.vst3  →  /Library/Audio/Plug-Ins/VST3
+- MUTAGEN.component  →  /Library/Audio/Plug-Ins/Components
+Si macOS dice que no se puede abrir: Ajustes del Sistema → Privacidad y seguridad → "Abrir igualmente".
+
+Todo (mandos, patrones GROSS, curvas, asignaciones) se guarda con tu proyecto.
+Todos los mandos se pueden automatizar en FL (clic derecho → Create automation clip).
