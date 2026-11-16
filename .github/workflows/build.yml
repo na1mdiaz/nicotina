@@ -20,9 +20,6 @@ jobs:
           - name: Windows
             os: windows-latest
             artifact: MUTAGEN-Windows
-          - name: macOS
-            os: macos-latest
-            artifact: MUTAGEN-macOS
           - name: Linux
             os: ubuntu-22.04
             artifact: MUTAGEN-Linux
