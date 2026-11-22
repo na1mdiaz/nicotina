@@ -1,0 +1,25 @@
+PEPELUS SATIVA OPERATIONS · 3 plugins VST3
+==========================================
+  PEPELUS SATURA.vst3  · saturador (Pepelu vomitando arcoíris)
+  PEPELUS SLOWED.vst3  · slowed + reverb con tape stop (la cueva y la hidra)
+  PEPELUS NINJA.vst3   · delay creativo, 12 estilos (Pepelu ninja contra fantasmas)
+
+WINDOWS (FL Studio)
+1. Cierra FL Studio.
+2. Copia las tres carpetas .vst3 en:
+   C:\Program Files\Common Files\VST3\
+   (si Windows pide permiso de administrador, acepta)
+3. Abre FL Studio > Options > Manage plugins > "Find installed plugins".
+4. Busca PEPELUS en la lista de efectos (marca la estrella para tenerlos a mano).
+5. Cárgalos en un slot del Mixer.
+
+La interfaz usa Microsoft Edge WebView2, que viene de serie en Windows 10 y 11.
+Si la ventana del plugin sale en blanco, instala "WebView2 Runtime" desde la web de Microsoft.
+
+DÓNDE PONERLOS
+- SATURA: en la voz (RESACA), en el máster antes del clipper y el limitador (GARRAFÓN),
+  en el 808 (CALIMOCHO) o en un envío (CABINA, efecto teléfono).
+- SLOWED: en la pista o el bus que quieras ralentizar. SLOW entre 40 y 70 %.
+  Del 93 % para arriba frena la cinta (tape stop): automatízalo antes de un drop.
+- NINJA: en la voz o en un envío. Los ecos van al tempo de tu proyecto.
+  ECOS a tope (96 %) congela el eco.
