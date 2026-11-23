@@ -1,0 +1,20 @@
+MUTAGEN 変異 · SEMILLA 6.0 · instrumento VST3
+=============================================
+La versión tipo Synplant: tocas acordes sencillos y MUTAGEN los toca con su sonido
+o se inventa una melodía encima (modo INVENTAR). Es un INSTRUMENTO: va en el Channel Rack, no en el Mixer.
+
+WINDOWS (FL Studio)
+1. Cierra FL Studio.
+2. Copia la carpeta "MUTAGEN SEMILLA.vst3" en:
+   C:\Program Files\Common Files\VST3\
+3. Abre FL Studio > Options > Manage plugins > "Find installed plugins".
+4. Añádelo como instrumento en el Channel Rack (está en Generators / Instrumentos como MUTAGEN SEMILLA).
+5. Toca con tu teclado MIDI o pon tus acordes en el Piano Roll de ese canal.
+
+- No sustituye al MUTAGEN antiguo: son plugins distintos y puedes tener los dos.
+- El tempo lo coge del proyecto.
+- Sin teclado MIDI: en la ventana del plugin pulsa ACORDES para oír los acordes de prueba,
+  o TECLADO para tocar con el ratón o con las teclas A S D F G H J K del ordenador.
+- Todo lo que hagas (semilla, ramas, MÍAS, mandos) se guarda con el proyecto de FL.
+- La interfaz usa WebView2 (viene de serie en Windows 10 y 11). Si sale en blanco,
+  instala "WebView2 Runtime" desde la web de Microsoft.

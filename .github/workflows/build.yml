@@ -1,0 +1,97 @@
+name: Build MUTAGEN SEMILLA
+
+on:
+  push:
+    branches: [ mutagen-semilla ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Windows
+            os: windows-latest
+            artifact: MUTAGEN-SEMILLA-Windows
+          - name: Linux
+            os: ubuntu-22.04
+            artifact: MUTAGEN-SEMILLA-Linux
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Dependencias de Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libasound2-dev libx11-dev libxcomposite-dev libxcursor-dev \
+            libxext-dev libxinerama-dev libxrandr-dev libxrender-dev libxi-dev \
+            libfreetype6-dev libfontconfig1-dev libgl1-mesa-dev ninja-build \
+            libgtk-3-dev libwebkit2gtk-4.1-dev
+
+      - name: WebView2 (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: nuget install Microsoft.Web.WebView2 -OutputDirectory "$env:GITHUB_WORKSPACE\nuget" -NonInteractive
+
+      - name: Configurar (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -S . -B build -A x64 -DJUCE_WEBVIEW2_PACKAGE_LOCATION="${{ github.workspace }}/nuget"
+
+      - name: Configurar (Linux)
+        if: runner.os == 'Linux'
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compilar
+        run: cmake --build build --config Release --parallel 4 --target Semilla_VST3
+
+      - name: Prueba de estrés del sonido (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          g++ -O2 -std=c++17 -I Source tools/Stress.cpp -o stress
+          ./stress
+
+      - name: Empaquetar
+        shell: bash
+        run: |
+          mkdir -p dist
+          cp -R build/Semilla_artefacts/Release/VST3/*.vst3 dist/
+          cp INSTALAR.txt dist/
+          ls -la dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: dist
+
+  release:
+    name: Publicar descarga
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Comprimir
+        run: |
+          cd artifacts
+          for d in */; do (cd "$d" && zip -qr "../${d%/}.zip" .); done
+          ls -la
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mutagen-semilla-v6.0.${{ github.run_number }}
+          name: MUTAGEN SEMILLA 6.0 (prueba ${{ github.run_number }})
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          prerelease: true
+          body: |
+            MUTAGEN 変異 · semilla 6.0 como instrumento VST3. Descarga el zip de Windows y lee INSTALAR.txt.
+          files: artifacts/*.zip
