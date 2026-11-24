@@ -1,8 +1,8 @@
-name: Build PEPELUS
+name: Build PEPELUS FIRE
 
 on:
   push:
-    branches: [ pepelus ]
+    branches: [ fire ]
   workflow_dispatch:
 
 permissions:
@@ -12,17 +12,20 @@ jobs:
   build:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 50
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
         include:
           - name: Windows
             os: windows-latest
-            artifact: PEPELUS-Windows
+            artifact: PEPELUS-FIRE-Windows
+          - name: macOS
+            os: macos-latest
+            artifact: PEPELUS-FIRE-Mac
           - name: Linux
             os: ubuntu-22.04
-            artifact: PEPELUS-Linux
+            artifact: PEPELUS-FIRE-Linux
 
     steps:
       - uses: actions/checkout@v4
@@ -43,27 +46,34 @@ jobs:
 
       - name: Configurar (Windows)
         if: runner.os == 'Windows'
-        run: cmake -S . -B build -A x64 -DJUCE_WEBVIEW2_PACKAGE_LOCATION="${{ github.workspace }}/nuget"
+        run: cmake -S . -B build -A x64 -DPEPELUS_PLUGINS=OFF -DJUCE_WEBVIEW2_PACKAGE_LOCATION="${{ github.workspace }}/nuget"
+
+      - name: Configurar (macOS, universal Apple Silicon + Intel)
+        if: runner.os == 'macOS'
+        run: cmake -S . -B build -G Xcode -DPEPELUS_PLUGINS=OFF -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
 
       - name: Configurar (Linux)
         if: runner.os == 'Linux'
-        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPEPELUS_TOOLS=ON
+        run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPEPELUS_PLUGINS=OFF
 
-      - name: Compilar
-        run: cmake --build build --config Release --parallel 4 --target Satura_VST3 Slowed_VST3 Ninja_VST3
+      - name: Compilar (Windows / Linux)
+        if: runner.os != 'macOS'
+        run: cmake --build build --config Release --parallel 4 --target Fire_VST3
 
-      - name: Prueba de estrés del sonido (Linux)
-        if: runner.os == 'Linux'
-        run: |
-          g++ -O2 -std=c++17 -I Source tools/Stress.cpp -o stress
-          ./stress
+      - name: Compilar (macOS: VST3 + AU)
+        if: runner.os == 'macOS'
+        run: cmake --build build --config Release --parallel 4 --target Fire_VST3 Fire_AU
 
       - name: Empaquetar
         shell: bash
         run: |
           mkdir -p dist
-          for p in Satura Slowed Ninja; do cp -R build/${p}_artefacts/Release/VST3/*.vst3 dist/; done
-          cp INSTALAR.txt dist/
+          cp -R build/Fire_artefacts/Release/VST3/*.vst3 dist/
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            cp -R build/Fire_artefacts/Release/AU/*.component dist/
+            for b in dist/*.vst3 dist/*.component; do codesign --force --deep -s - "$b"; done
+          fi
+          cp INSTALAR-FIRE.txt dist/INSTALAR.txt
           ls -la dist
 
       - uses: actions/upload-artifact@v4
@@ -83,15 +93,15 @@ jobs:
       - name: Comprimir
         run: |
           cd artifacts
-          for d in */; do (cd "$d" && zip -qr "../${d%/}.zip" .); done
+          for d in */; do (cd "$d" && zip -qry "../${d%/}.zip" .); done
           ls -la
       - uses: softprops/action-gh-release@v2
         with:
-          tag_name: pepelus-v1.0.${{ github.run_number }}
-          name: PEPELUS 1.0 (prueba ${{ github.run_number }})
+          tag_name: fire-v1.0.${{ github.run_number }}
+          name: PEPELUS FIRE 1.0 (prueba ${{ github.run_number }})
           target_commitish: ${{ github.sha }}
           make_latest: false
           prerelease: true
           body: |
-            PEPELUS SATIVA OPERATIONS: SATURA, SLOWED y NINJA (VST3). Descarga el zip de Windows y lee INSTALAR.txt.
+            PEPELUS FIRE OPERATIONS: VST3 para Windows y Mac (y AU para Logic/GarageBand). Descarga el zip de tu sistema y lee INSTALAR.txt.
           files: artifacts/*.zip

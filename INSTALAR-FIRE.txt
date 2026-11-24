@@ -1,0 +1,36 @@
+PEPELUS FIRE OPERATIONS 🔥 — VST3 / AU
+=====================================
+
+WINDOWS (FL Studio, Ableton, Cubase, Reaper...)
+1. Copia la carpeta "PEPELUS FIRE.vst3" en:
+   C:\Program Files\Common Files\VST3\
+2. FL Studio: Options > Manage plugins > "Find installed plugins".
+3. Busca PEPELUS FIRE en los efectos y ponlo en un slot del Mixer.
+
+MAC (FL Studio, Ableton, Logic, GarageBand...)
+1. Copia "PEPELUS FIRE.vst3" en:       /Library/Audio/Plug-Ins/VST3/
+   y "PEPELUS FIRE.component" en:      /Library/Audio/Plug-Ins/Components/   (Logic y GarageBand usan este)
+2. Como no está firmado por Apple, abre la Terminal y pega:
+   sudo xattr -cr "/Library/Audio/Plug-Ins/VST3/PEPELUS FIRE.vst3" "/Library/Audio/Plug-Ins/Components/PEPELUS FIRE.component"
+3. Reabre el DAW y busca los plugins (en FL: Manage plugins > Find installed plugins).
+
+CÓMO SE USA
+1. Pon PEPELUS FIRE en la pista de la voz (el audio pasa tal cual, no se toca).
+2. Elige la voz:  ● GRABAR (graba lo que suena en la pista: dale a play en el DAW y pulsa otra vez para parar),
+   TU AUDIO (abre un wav/mp3/aiff/flac) o VOZ DEMO.
+3. Marca la palabra en la onda, elige el efecto en las pestañas y gira las perillas.
+4. ▶ PREVIEW lo escucha por la salida del DAW.
+5. Arrastra el recuadro "ARRASTRA A TU DAW" a la playlist / pista.
+   Si tu DAW no acepta el arrastre: ⬇ BAJAR WAV lo guarda en Música > PEPELUS FIRE y abre la carpeta.
+   Cada arrastre crea un archivo nuevo, así los clips que ya usaste no cambian nunca.
+
+PESTAÑAS
+- BACKVERB ... reverb al revés que crece hasta la palabra.
+- STUTTER .... pi-pi-pi-palabra a tempo: patrón, variación (tono, filtro, revés) y qué trozo se repite.
+- ECO ........ "fumando… fumando": la frase y su respuesta (grave, agudo, susurro, radio, revés).
+- PITCH ...... tono y formant por separado, con presets (gigante, demonio, niña, ardilla, alien).
+- MUTAR ...... demonio, glitch, freeze, radio, enjambre.
+- LOCURA ..... agujero negro, scratch, fantasma, ring, arpegio.
+
+TEMPO: con SYNC encendido sigue el tempo del proyecto. TAP, la rueda o arrastrar el número lo cambian a mano.
+Los ajustes se guardan con el proyecto.
