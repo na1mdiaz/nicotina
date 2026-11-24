@@ -60,7 +60,7 @@ jobs:
         if: runner.os != 'macOS'
         run: cmake --build build --config Release --parallel 4 --target Fire_VST3
 
-      - name: Compilar (macOS: VST3 + AU)
+      - name: "Compilar (macOS, VST3 + AU)"
         if: runner.os == 'macOS'
         run: cmake --build build --config Release --parallel 4 --target Fire_VST3 Fire_AU
 
