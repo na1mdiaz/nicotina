@@ -28,8 +28,7 @@ jobs:
       - name: Crear el instalador
         run: |
           pkgbuild --analyze --root payload comp.plist
-          n=$(plutil -extract . raw comp.plist >/dev/null 2>&1; /usr/libexec/PlistBuddy -c "Print" comp.plist | grep -c "RootRelativeBundlePath")
-          for i in $(seq 0 $((n-1))); do /usr/libexec/PlistBuddy -c "Set :$i:BundleIsRelocatable false" comp.plist; done
+          python3 -c "import plistlib; p=plistlib.load(open('comp.plist','rb')); [b.__setitem__('BundleIsRelocatable', False) for b in p]; plistlib.dump(p, open('comp.plist','wb')); print(len(p), 'bundles')"
           pkgbuild --root payload --component-plist comp.plist --install-location / \
             --identifier com.na1mdiaz.pepelus --version 1.0 --scripts installer/scripts pepelus.pkg
           productbuild --distribution installer/distribution.xml --resources installer/resources \
