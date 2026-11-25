@@ -1,4 +1,4 @@
-PEPELUS SATIVA OPERATIONS · 3 plugins VST3
+PEPELUS SATIVA OPERATIONS · 3 plugins VST3 (Windows y Mac) y AU (Mac)
 ==========================================
   PEPELUS SATURA.vst3  · saturador (Pepelu vomitando arcoíris)
   PEPELUS SLOWED.vst3  · slowed + reverb con tape stop (la cueva y la hidra)
@@ -12,6 +12,16 @@ WINDOWS (FL Studio)
 3. Abre FL Studio > Options > Manage plugins > "Find installed plugins".
 4. Busca PEPELUS en la lista de efectos (marca la estrella para tenerlos a mano).
 5. Cárgalos en un slot del Mixer.
+
+MAC (FL Studio, Ableton, Logic, GarageBand)
+1. Cierra el DAW.
+2. En el Finder pulsa Cmd + Mayús + G y ve a cada carpeta:
+   - Los .vst3 (FL, Ableton...) a:       /Library/Audio/Plug-Ins/VST3/
+   - Los .component (Logic, GarageBand) a: /Library/Audio/Plug-Ins/Components/
+3. Como no están firmados por Apple, abre la Terminal y pega (pide la contraseña del Mac, no se ve al escribirla):
+   sudo xattr -cr /Library/Audio/Plug-Ins/VST3/PEPELUS* /Library/Audio/Plug-Ins/Components/PEPELUS*
+4. Abre el DAW. En FL: Options > Manage plugins > "Find installed plugins".
+   Funcionan en Mac con chip Apple (M1, M2...) y en los Intel.
 
 La interfaz usa Microsoft Edge WebView2, que viene de serie en Windows 10 y 11.
 Si la ventana del plugin sale en blanco, instala "WebView2 Runtime" desde la web de Microsoft.

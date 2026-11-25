@@ -20,6 +20,9 @@ jobs:
           - name: Windows
             os: windows-latest
             artifact: PEPELUS-Windows
+          - name: macOS
+            os: macos-15-intel
+            artifact: PEPELUS-Mac
           - name: Linux
             os: ubuntu-22.04
             artifact: PEPELUS-Linux
@@ -45,12 +48,21 @@ jobs:
         if: runner.os == 'Windows'
         run: cmake -S . -B build -A x64 -DJUCE_WEBVIEW2_PACKAGE_LOCATION="${{ github.workspace }}/nuget"
 
+      - name: "Configurar (macOS, universal Apple Silicon + Intel)"
+        if: runner.os == 'macOS'
+        run: cmake -S . -B build -G Xcode -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64"
+
       - name: Configurar (Linux)
         if: runner.os == 'Linux'
         run: cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DPEPELUS_TOOLS=ON
 
-      - name: Compilar
+      - name: Compilar (Windows / Linux)
+        if: runner.os != 'macOS'
         run: cmake --build build --config Release --parallel 4 --target Satura_VST3 Slowed_VST3 Ninja_VST3
+
+      - name: "Compilar (macOS, VST3 + AU)"
+        if: runner.os == 'macOS'
+        run: cmake --build build --config Release --parallel 4 --target Satura_VST3 Slowed_VST3 Ninja_VST3 Satura_AU Slowed_AU Ninja_AU
 
       - name: Prueba de estrés del sonido (Linux)
         if: runner.os == 'Linux'
@@ -63,6 +75,10 @@ jobs:
         run: |
           mkdir -p dist
           for p in Satura Slowed Ninja; do cp -R build/${p}_artefacts/Release/VST3/*.vst3 dist/; done
+          if [ "$RUNNER_OS" = "macOS" ]; then
+            for p in Satura Slowed Ninja; do cp -R build/${p}_artefacts/Release/AU/*.component dist/; done
+            for b in dist/*.vst3 dist/*.component; do codesign --force --deep -s - "$b"; done
+          fi
           cp INSTALAR.txt dist/
           ls -la dist
 
@@ -83,7 +99,7 @@ jobs:
       - name: Comprimir
         run: |
           cd artifacts
-          for d in */; do (cd "$d" && zip -qr "../${d%/}.zip" .); done
+          for d in */; do (cd "$d" && zip -qry "../${d%/}.zip" .); done
           ls -la
       - uses: softprops/action-gh-release@v2
         with:
@@ -93,5 +109,5 @@ jobs:
           make_latest: false
           prerelease: true
           body: |
-            PEPELUS SATIVA OPERATIONS: SATURA, SLOWED y NINJA (VST3). Descarga el zip de Windows y lee INSTALAR.txt.
+            PEPELUS SATIVA OPERATIONS: SATURA, SLOWED y NINJA (VST3). VST3 para Windows y Mac, y AU para Logic/GarageBand. Descarga el zip de tu sistema y lee INSTALAR.txt.
           files: artifacts/*.zip
