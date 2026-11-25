@@ -1,0 +1,27 @@
+name: Prueba auval
+on:
+  workflow_dispatch:
+  push:
+    branches: [ instalador-mac ]
+    paths: [ '.github/workflows/auval.yml' ]
+jobs:
+  auval:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ macos-15-intel, macos-15 ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Instalar y validar
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download fire-v1.0.10 -p 'PEPELUS-FIRE-Mac.zip' -R ${{ github.repository }}
+          gh release download pepelus-v1.0.11 -p 'PEPELUS-Mac.zip' -R ${{ github.repository }}
+          mkdir -p src ~/Library/Audio/Plug-Ins/Components
+          ditto -x -k PEPELUS-FIRE-Mac.zip src; ditto -x -k PEPELUS-Mac.zip src
+          cp -R src/*.component ~/Library/Audio/Plug-Ins/Components/
+          for c in ~/Library/Audio/Plug-Ins/Components/PEPELUS*; do echo "== $c"; codesign -dv "$c" 2>&1 | head -4; lipo -info "$c"/Contents/MacOS/*; plutil -p "$c/Contents/Info.plist" | sed -n '/AudioComponents/,/]/p'; done
+          killall -9 AudioComponentRegistrar || true; sleep 3
+          auval -a | grep -i na1m || true
+          for code in PsFi PsSa PsSl PsNj; do echo "=========== $code"; auval -strict -v aufx $code Na1m 2>&1 | tail -60 || true; done
