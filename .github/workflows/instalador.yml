@@ -1,0 +1,49 @@
+name: Instalador Mac PEPELUS
+
+on:
+  push:
+    branches: [ instalador-mac ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  pkg:
+    runs-on: macos-15-intel
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bajar los plugins ya compilados
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download fire-v1.0.10 -p 'PEPELUS-FIRE-Mac.zip' -R ${{ github.repository }}
+          gh release download pepelus-v1.0.11 -p 'PEPELUS-Mac.zip' -R ${{ github.repository }}
+          mkdir -p src payload/Library/Audio/Plug-Ins/VST3 payload/Library/Audio/Plug-Ins/Components
+          ditto -x -k PEPELUS-FIRE-Mac.zip src
+          ditto -x -k PEPELUS-Mac.zip src
+          cp -R src/*.vst3 payload/Library/Audio/Plug-Ins/VST3/
+          cp -R src/*.component payload/Library/Audio/Plug-Ins/Components/
+          find payload -maxdepth 5 -name "*.vst3" -o -maxdepth 5 -name "*.component"
+      - name: Crear el instalador
+        run: |
+          pkgbuild --analyze --root payload comp.plist
+          n=$(plutil -extract . raw comp.plist >/dev/null 2>&1; /usr/libexec/PlistBuddy -c "Print" comp.plist | grep -c "RootRelativeBundlePath")
+          for i in $(seq 0 $((n-1))); do /usr/libexec/PlistBuddy -c "Set :$i:BundleIsRelocatable false" comp.plist; done
+          pkgbuild --root payload --component-plist comp.plist --install-location / \
+            --identifier com.na1mdiaz.pepelus --version 1.0 --scripts installer/scripts pepelus.pkg
+          productbuild --distribution installer/distribution.xml --resources installer/resources \
+            --package-path . "Instalar PEPELUS.pkg"
+          ls -la *.pkg
+          pkgutil --payload-files "Instalar PEPELUS.pkg" | head -20
+      - name: Comprimir
+        run: ditto -c -k --sequesterRsrc "Instalar PEPELUS.pkg" PEPELUS-Instalador-Mac.zip
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: instalador-mac-v1.0.${{ github.run_number }}
+          name: PEPELUS · Instalador Mac (${{ github.run_number }})
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          make_latest: false
+          body: Instalador de un clic para Mac con FIRE, SATURA, SLOWED y NINJA (VST3 + AU).
+          files: PEPELUS-Instalador-Mac.zip

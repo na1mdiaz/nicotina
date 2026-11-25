@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+  <title>PEPELUS SATIVA OPERATIONS</title>
+  <welcome file="welcome.html" mime-type="text/html"/>
+  <conclusion file="conclusion.html" mime-type="text/html"/>
+  <options customize="never" require-scripts="false" hostArchitectures="x86_64,arm64"/>
+  <domains enable_localSystem="true"/>
+  <choices-outline><line choice="default"><line choice="pepelus"/></line></choices-outline>
+  <choice id="default"/>
+  <choice id="pepelus" visible="false"><pkg-ref id="com.na1mdiaz.pepelus"/></choice>
+  <pkg-ref id="com.na1mdiaz.pepelus" version="1.0" onConclusion="none">pepelus.pkg</pkg-ref>
+</installer-gui-script>

@@ -1,0 +1,6 @@
+#!/bin/bash
+# Quita el bloqueo de Apple a los plugins y refresca la lista de Audio Units (Logic / GarageBand)
+xattr -cr /Library/Audio/Plug-Ins/VST3/PEPELUS* 2>/dev/null
+xattr -cr /Library/Audio/Plug-Ins/Components/PEPELUS* 2>/dev/null
+killall -9 AudioComponentRegistrar 2>/dev/null
+exit 0
